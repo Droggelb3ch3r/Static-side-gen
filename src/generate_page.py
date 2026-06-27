@@ -3,7 +3,7 @@ import os
 import shutil
 from md_to_html_node import markdown_to_html_node
 
-def copy_static_to_public(basepath="static", output_dir="public"):
+def copy_static_to_public(basepath, output_dir):
     # Copy static files from the 'static' directory to the 'public' directory
     static_dir = basepath
     output_dir = output_dir
