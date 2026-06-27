@@ -3,10 +3,10 @@ import os
 import shutil
 from md_to_html_node import markdown_to_html_node
 
-def copy_static_to_public():
+def copy_static_to_public(basepath="static", output_dir="public"):
     # Copy static files from the 'static' directory to the 'public' directory
-    static_dir = "static"
-    output_dir = "public"
+    static_dir = basepath
+    output_dir = output_dir
     path = os.path.join(os.getcwd(), static_dir)
     print(f"Copying static files from {path} to {output_dir}...")
 
@@ -38,7 +38,7 @@ def extract_title(markdown):
     raise ValueError("No title found in the markdown content")
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path} using template {template_path} to {dest_path}...")
     # Read the markdown content from the source file
     with open(from_path, 'r', encoding='utf-8') as f:
@@ -54,12 +54,14 @@ def generate_page(from_path, template_path, dest_path):
         .replace("{{ Content }}", html_content)
         .replace("{{ title }}", title)
         .replace("{{ content }}", html_content)
+        .replace('href="/', f'href="{basepath}')
+        .replace('src="/', f'src="{basepath}')
     )
     # Write the final content to the destination file
     with open(dest_path, 'w', encoding='utf-8') as f:
         f.write(final_content)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     # Generate pages recursively for all markdown files in the content directory
     for root, dirs, files in os.walk(dir_path_content):
         for file in files:
@@ -68,4 +70,4 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 relative_path = os.path.relpath(from_path, dir_path_content)
                 dest_path = os.path.join(dest_dir_path, relative_path[:-3] + ".html")  # Change .md to .html
                 os.makedirs(os.path.dirname(dest_path), exist_ok=True)  # Create destination directory if it doesn't exist
-                generate_page(from_path, template_path, dest_path)
+                generate_page(from_path, template_path, dest_path, basepath)
